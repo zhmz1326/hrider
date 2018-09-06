@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>h-rider</groupId>
+    <artifactId>h-rider</artifactId>
+    <name>h-rider</name>
+    <description>hbase viewer and editor</description>
+
+    <packaging>jar</packaging>
+    <version>1.0.9-SNAPSHOT</version>
+
+    <repositories>
+        <repository>
+            <id>localrepository</id>
+            <url>file://${project.basedir}/repo</url>
+        </repository>
+   <!--     <repository>
+            <id>cloudera</id>
+            <url>https://repository.cloudera.com/artifactory/cloudera-repos</url>
+        </repository>
+        <repository>
+            <id>mvnrepository</id>
+            <url>http://mvnrepository.com/artifact</url>
+        </repository>-->
+        <repository>
+            <id>bi4</id>
+            <url>http://198.11.219.187:8081/nexus/content/groups/public</url>
+            </repository>
+    </repositories>
+
+    <properties>
+        <hbase.version>1.1.1-IBM-3</hbase.version>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>bi4</id>
+            <properties>
+                <!--<hbase.version>1.1.1-IBM-3</hbase.version>
+                <hadoop.version>2.7.1-IBM-8</hadoop.version>-->
+                <hbase.version>1.2.3</hbase.version>
+                <hadoop.version>2.7.2</hadoop.version>
+            </properties>
+            <dependencies>
+                <dependency>
+                <groupId>org.apache.hadoop</groupId>
+                <artifactId>hadoop-hdfs</artifactId>
+                <version>${hadoop.version}</version>
+            </dependency>
+                <dependency>
+                    <groupId>org.apache.hadoop</groupId>
+                    <artifactId>hadoop-common</artifactId>
+                    <version>${hadoop.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.hbase</groupId>
+                    <artifactId>hbase-client</artifactId>
+                    <version>${hbase.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.hbase</groupId>
+                    <artifactId>hbase-server</artifactId>
+                    <version>${hbase.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.hbase</groupId>
+                    <artifactId>hbase-common</artifactId>
+                    <version>${hbase.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
+                    <version>2.9.0</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>cdh4</id>
+            <properties>
+                <hbase.version>0.92.1-cdh4.1.2</hbase.version>
+                <hadoop.version>2.0.0-cdh4.1.2</hadoop.version>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.hadoop</groupId>
+                    <artifactId>hadoop-client</artifactId>
+                    <version>${hadoop.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>0.94.1</id>
+            <properties>
+                <hbase.version>0.94.1</hbase.version>
+                <hadoop.version>1.0.3</hadoop.version>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.hadoop</groupId>
+                    <artifactId>hadoop-core</artifactId>
+                    <version>1.0.3</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>0.90.4</id>
+            <properties>
+                <hbase.version>0.90.4</hbase.version>
+            </properties>
+        </profile>
+    </profiles>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-client</artifactId>
+            <version>0.98.8_IBM_4-hadoop2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.michaelbaranov</groupId>
+            <artifactId>microba</artifactId>
+            <version>0.4.4.3</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>forms_rt</artifactId>
+            <version>7.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun</groupId>
+            <artifactId>tools</artifactId>
+            <scope>compile</scope>
+            <version>1.6</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.5.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>false</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>hrider.ui.forms.Window</mainClass>
+                            <packageName>hrider.ui.forms</packageName>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                        </manifest>
+                        <manifestEntries>
+                            <version>${project.version}</version>
+                            <hbaseVersion>${hbase.version}</hbaseVersion>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+
+
+                <!-- any other plugins -->
+                <plugin>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>single</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <descriptorRefs>
+                            <descriptorRef>jar-with-dependencies</descriptorRef>
+                        </descriptorRefs>
+                        <archive>
+                            <manifest>
+                                <mainClass>hrider.ui.forms.Window</mainClass>
+                            </manifest>
+                        </archive>
+                    </configuration>
+                </plugin>
+
+        </plugins>
+
+        <!--This section allows this POM to be valid for eclipse-->
+        <pluginManagement>
+            <plugins>
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.apache.maven.plugins</groupId>
+                                        <artifactId>maven-dependency-plugin</artifactId>
+                                        <versionRange>[2.5.1,)</versionRange>
+                                        <goals>
+                                            <goal>copy-dependencies</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore/>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+    </build>
+
+    <distributionManagement>
+    <repository>
+    <id>biginsights.maven.releases</id>
+    <name>Internal Release Repository</name>
+     <!--  This property is defined in the global Maven settings.xml file
+  -->
+        <url>http://198.11.219.187:8081/nexus/content/groups/</url>
+    </repository>
+     <snapshotRepository>
+    <id>biginsights.maven.snapshots</id>
+    <name>Internal Snapshot Repository</name>
+    <url>http://198.11.219.187:8081/nexus/content/groups/public</url>
+    </snapshotRepository>
+</distributionManagement>
+
+
+
+</project>

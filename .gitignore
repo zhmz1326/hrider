@@ -1,0 +1,5 @@
+/target
+.idea
+config
+h-rider.iml
+*.log
