@@ -24,6 +24,7 @@ import hrider.ui.*;
 import hrider.ui.controls.WideComboBox;
 import hrider.ui.design.*;
 import hrider.ui.forms.*;
+import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -412,10 +413,15 @@ public class DesignerView {
                                     for (int i = 0; i < rowsTable.getRowCount(); i++) {
                                         rowsTableModel.setValueAt(1, i, updateColumn);
                                         rowsTable.editCellAt(i, updateColumn);
-//                                        rowsTable.s
-                                        changeTracker.addChange((DataCell)rowsTable.getValueAt(i, updateColumn));
-                                        // rowsTable.getCellEditor(i, updateColumn).get;
-                                        // rowsTableModel.fireTableCellUpdated(i, updateColumn);
+
+                                        DataCell keyCell = (DataCell)rowsTable.getValueAt(i, 0);
+                                        ConvertibleObject key = new ConvertibleObject(keyCell.getType(), keyCell.getValueAsByteArray());
+                                        DataRow row = new DataRow(key);
+
+                                        ColumnQualifier qualifier = new ColumnQualifier("exportFlag", new ColumnFamily("c"), ColumnType.String.getConverter());
+                                        DataCell cell = new DataCell(row, qualifier, new ConvertibleObject(ColumnType.String, ColumnType.String.toBytes("1")));
+
+                                        changeTracker.addChange(cell);
                                     }
 
                                     rowSave.setEnabled(changeTracker.hasChanges());
